@@ -17,78 +17,51 @@
     --amber:#F0B429;
     --clay:#B26A43;
     --alert:#E05A4F;
-    --display:"Barlow Condensed", "Haettenschweiler", Impact, sans-serif;
+    --display:"Barlow Condensed", Impact, sans-serif;
     --body:"IBM Plex Sans", system-ui, -apple-system, sans-serif;
     --data:"IBM Plex Mono", ui-monospace, Menlo, monospace;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--loam);
-    color:var(--chalk);
-    font-family:var(--body);
-    font-size:15px;
-    line-height:1.45;
+    background:var(--loam);color:var(--chalk);
+    font-family:var(--body);font-size:15px;line-height:1.45;
     -webkit-font-smoothing:antialiased;
     padding:0 0 env(safe-area-inset-bottom);
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:14px 14px 100px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:14px 14px 60px;}
 
-  /* ---------- header ---------- */
-  .masthead{
-    display:flex;align-items:flex-end;justify-content:space-between;
-    gap:12px;padding-bottom:10px;border-bottom:1px solid var(--edge);
-  }
-  .masthead h1{
-    font-family:var(--display);
-    font-weight:700;
-    font-size:30px;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    margin:0;line-height:1;
-  }
-  .masthead .sub{
-    font-family:var(--data);font-size:10px;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--muted);margin-top:5px;
-  }
-  .clock{
-    font-family:var(--data);font-size:26px;font-weight:500;
-    letter-spacing:.02em;line-height:1;text-align:right;
-  }
-  .clock small{display:block;font-size:9px;letter-spacing:.18em;color:var(--muted);margin-top:5px;text-transform:uppercase;}
+  .masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+    padding-bottom:10px;border-bottom:1px solid var(--edge);}
+  .masthead h1{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:.06em;
+    text-transform:uppercase;margin:0;line-height:1;}
+  .masthead .sub{font-family:var(--data);font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);margin-top:5px;}
+  .clock{font-family:var(--data);font-size:26px;font-weight:500;line-height:1;text-align:right;}
+  .clock small{display:block;font-size:9px;letter-spacing:.18em;color:var(--muted);
+    margin-top:5px;text-transform:uppercase;}
   .clock.low{color:var(--amber);}
 
-  /* ---------- listening bar ---------- */
-  .earpanel{
-    margin-top:14px;background:var(--shale);border:1px solid var(--edge);
-    border-radius:3px;padding:14px;
-  }
+  .earpanel{margin-top:14px;background:var(--shale);border:1px solid var(--edge);
+    border-radius:3px;padding:14px;}
   .earpanel .row{display:flex;align-items:center;gap:12px;}
-  .dot{
-    width:11px;height:11px;border-radius:50%;background:var(--edge);flex:none;
-  }
+  .dot{width:11px;height:11px;border-radius:50%;background:var(--edge);flex:none;}
   .dot.live{background:var(--amber);animation:pulse 1.5s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.8);}}
-  .status{
-    font-family:var(--data);font-size:11px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted);
-  }
+  .status{font-family:var(--data);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);}
   .status.live{color:var(--amber);}
-  .heard{
-    font-family:var(--data);font-size:15px;margin-top:10px;
-    color:var(--muted);min-height:22px;word-break:break-word;
-  }
+  .status.done{color:var(--amber);}
+  .heard{font-family:var(--data);font-size:15px;margin-top:10px;color:var(--muted);
+    min-height:22px;word-break:break-word;}
   .heard b{color:var(--chalk);font-weight:500;}
+  .heard.bad b{color:var(--alert);}
 
-  /* ---------- controls ---------- */
   .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-  button{
-    font-family:var(--display);font-size:17px;font-weight:600;
-    letter-spacing:.07em;text-transform:uppercase;
-    background:transparent;color:var(--chalk);
-    border:1px solid var(--edge);border-radius:2px;
-    padding:9px 16px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
-  }
+  button{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:.07em;
+    text-transform:uppercase;background:transparent;color:var(--chalk);
+    border:1px solid var(--edge);border-radius:2px;padding:9px 16px;cursor:pointer;
+    transition:background .15s,border-color .15s,color .15s;}
   button:hover{border-color:var(--muted);}
   button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
   button.primary{background:var(--amber);border-color:var(--amber);color:#1E2119;}
@@ -96,103 +69,77 @@
   button.stop{border-color:var(--alert);color:var(--alert);}
   button:disabled{opacity:.35;cursor:not-allowed;}
 
-  .opts{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid var(--edge);}
-  label.opt{
-    font-family:var(--data);font-size:10px;letter-spacing:.13em;
-    text-transform:uppercase;color:var(--muted);
-    display:flex;align-items:center;gap:7px;cursor:pointer;
-  }
-  select,input[type=number]{
-    font-family:var(--data);font-size:12px;background:var(--loam);color:var(--chalk);
-    border:1px solid var(--edge);border-radius:2px;padding:5px 7px;
-  }
-  input[type=checkbox]{accent-color:var(--amber);width:15px;height:15px;}
-
-  /* ---------- main split ---------- */
   .split{display:grid;grid-template-columns:150px 1fr;gap:16px;margin-top:18px;align-items:start;}
   @media (max-width:640px){.split{grid-template-columns:104px 1fr;gap:11px;}}
 
-  /* ---------- strata column (signature) ---------- */
-  .strata{position:relative;}
-  .strata-head{
-    font-family:var(--data);font-size:9px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--muted);margin-bottom:7px;
-  }
-  .column{
-    position:relative;height:520px;background:var(--shale);
-    border:1px solid var(--edge);border-radius:2px;overflow:hidden;
-  }
-  .fill{
-    position:absolute;left:0;right:0;top:0;height:0;
+  .strata-head{font-family:var(--data);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+  .column{position:relative;height:520px;background:var(--shale);
+    border:1px solid var(--edge);border-radius:2px;overflow:hidden;}
+  .fill{position:absolute;left:0;right:0;top:0;height:0;
     background:linear-gradient(180deg,#C77B4E 0%,var(--clay) 45%,#7E4A2E 100%);
-    transition:height .35s cubic-bezier(.2,.7,.3,1);
-  }
-  .blowline{
-    position:absolute;left:0;right:0;height:1px;
-    background:rgba(30,33,25,.5);
-  }
-  .blowline.flagged{background:var(--alert);height:2px;}
+    transition:height .35s cubic-bezier(.2,.7,.3,1);}
+  .readline{position:absolute;left:0;right:0;height:1px;background:rgba(30,33,25,.5);}
+  .readline.flagged{background:var(--alert);height:2px;}
   .grad{position:absolute;left:0;right:0;height:1px;background:var(--edge);}
-  .grad span{
-    position:absolute;right:4px;top:-13px;
-    font-family:var(--data);font-size:9px;color:var(--muted);
-  }
-  .tipmark{
-    position:absolute;left:0;right:0;height:2px;background:var(--amber);
-    transition:top .35s cubic-bezier(.2,.7,.3,1);
-  }
-  .colfoot{
-    font-family:var(--data);font-size:9px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted);margin-top:7px;text-align:center;
-  }
+  .grad.major{background:var(--muted);opacity:.5;}
+  .grad span{position:absolute;right:4px;top:-13px;font-family:var(--data);
+    font-size:9px;color:var(--muted);}
+  .tipmark{position:absolute;left:0;right:0;height:2px;background:var(--amber);
+    transition:top .35s cubic-bezier(.2,.7,.3,1);}
+  .colfoot{font-family:var(--data);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-top:7px;text-align:center;}
 
-  /* ---------- readout ---------- */
-  .readout{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:2px;}
+  .readout{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--edge);
+    border:1px solid var(--edge);border-radius:2px;}
   .cell{background:var(--shale);padding:11px 12px;}
-  .cell .k{font-family:var(--data);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
-  .cell .v{font-family:var(--data);font-size:23px;font-weight:500;margin-top:3px;line-height:1;}
+  .cell .k{font-family:var(--data);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);}
+  .cell .v{font-family:var(--data);font-size:25px;font-weight:500;margin-top:3px;line-height:1;}
   .cell .v small{font-size:11px;color:var(--muted);font-weight:400;}
-  @media (max-width:520px){.cell .v{font-size:19px;}}
+  .cell .v.done{color:var(--amber);}
 
-  /* ---------- log ---------- */
   .logwrap{margin-top:14px;border:1px solid var(--edge);border-radius:2px;overflow:hidden;}
-  .loghead{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:9px 12px;background:var(--shale);border-bottom:1px solid var(--edge);
-  }
-  .loghead h2{
-    font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:.09em;
-    text-transform:uppercase;margin:0;
-  }
+  .loghead{display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px;background:var(--shale);border-bottom:1px solid var(--edge);}
+  .loghead h2{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;margin:0;}
   table{width:100%;border-collapse:collapse;font-family:var(--data);font-size:13px;}
-  th{
-    font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
-    font-weight:500;text-align:right;padding:8px 10px;border-bottom:1px solid var(--edge);
-  }
+  th{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+    font-weight:500;text-align:right;padding:8px 10px;border-bottom:1px solid var(--edge);}
   th:first-child{text-align:left;}
-  td{padding:9px 10px;text-align:right;border-bottom:1px solid rgba(61,67,53,.5);}
+  td{padding:7px 10px;text-align:right;border-bottom:1px solid rgba(61,67,53,.5);}
   td:first-child{text-align:left;color:var(--muted);}
   tr.latest td{background:rgba(240,180,41,.07);}
   tr.flagged td{color:var(--alert);}
-  td.del{width:34px;text-align:center;color:var(--muted);cursor:pointer;user-select:none;}
+  tr.flagged td.reason{font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+  td.reason{color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+  input.edit{
+    width:78px;font-family:var(--data);font-size:13px;text-align:right;
+    background:transparent;color:inherit;border:1px solid transparent;
+    border-radius:2px;padding:3px 5px;-moz-appearance:textfield;
+  }
+  input.edit:hover{border-color:var(--edge);}
+  input.edit:focus{border-color:var(--amber);outline:none;background:var(--loam);color:var(--chalk);}
+  input.edit::-webkit-outer-spin-button,input.edit::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;}
+  td.del{width:34px;text-align:center;color:var(--muted);cursor:pointer;user-select:none;font-size:16px;}
   td.del:hover{color:var(--alert);}
   .empty{padding:30px 14px;text-align:center;color:var(--muted);font-size:14px;}
   .empty b{display:block;color:var(--chalk);font-family:var(--display);font-size:19px;
     letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-weight:600;}
 
-  /* ---------- manual entry ---------- */
   .manual{display:flex;gap:8px;padding:11px 12px;background:var(--shale);border-top:1px solid var(--edge);}
-  .manual input{flex:1;min-width:0;}
+  .manual input{flex:1;min-width:0;font-family:var(--data);font-size:14px;
+    background:var(--loam);color:var(--chalk);border:1px solid var(--edge);
+    border-radius:2px;padding:8px 9px;}
 
   .note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.6;}
   .note code{font-family:var(--data);color:var(--chalk);font-size:11px;}
-  .warnbox{
-    margin-top:14px;padding:12px 14px;border:1px solid var(--alert);
-    border-radius:2px;color:var(--alert);font-size:13px;display:none;
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none !important;transition:none !important;}
-  }
+  .banner{margin-top:14px;padding:12px 14px;border-radius:2px;font-size:13px;display:none;}
+  .banner.err{border:1px solid var(--alert);color:var(--alert);}
+  .banner.ok{border:1px solid var(--amber);color:var(--amber);}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
 </style>
 </head>
 <body>
@@ -201,19 +148,20 @@
   <div class="masthead">
     <div>
       <h1>DCP Voice Log</h1>
-      <div class="sub">Dynamic cone penetrometer &middot; hands-free capture</div>
+      <div class="sub">Dynamic cone penetrometer &middot; 0&ndash;100 cm</div>
     </div>
     <div class="clock" id="clock">15:00<small>Session</small></div>
   </div>
 
-  <div class="warnbox" id="warnbox"></div>
+  <div class="banner err" id="warnbox"></div>
+  <div class="banner ok" id="donebox"></div>
 
   <div class="earpanel">
     <div class="row">
       <span class="dot" id="dot"></span>
       <span class="status" id="status">Microphone off</span>
     </div>
-    <div class="heard" id="heard">Say a depth reading after each blow — “one hundred and twenty five”.</div>
+    <div class="heard" id="heard">Say each depth in centimetres &mdash; &ldquo;twelve point five&rdquo;, &ldquo;forty&rdquo;.</div>
 
     <div class="controls">
       <button class="primary" id="btnStart">Start listening</button>
@@ -221,37 +169,22 @@
       <button id="btnCsv">Export CSV</button>
       <button id="btnReset">New test</button>
     </div>
-
-    <div class="opts">
-      <label class="opt">Mode
-        <select id="mode">
-          <option value="depth">Depth only — 1 blow each</option>
-          <option value="blowsdepth">Blows, then depth</option>
-        </select>
-      </label>
-      <label class="opt">Blows per reading
-        <input type="number" id="bpr" value="1" min="1" max="50" style="width:56px">
-      </label>
-      <label class="opt"><input type="checkbox" id="beep" checked> Confirm beep</label>
-      <label class="opt"><input type="checkbox" id="cbr"> Show CBR estimate</label>
-    </div>
   </div>
 
   <div class="split">
-    <div class="strata">
+    <div>
       <div class="strata-head">Profile</div>
       <div class="column" id="column">
         <div class="fill" id="fill"></div>
         <div class="tipmark" id="tipmark" style="top:0"></div>
       </div>
-      <div class="colfoot" id="colfoot">0 – 800 mm</div>
+      <div class="colfoot">0 &ndash; 100 cm</div>
     </div>
 
     <div>
       <div class="readout">
-        <div class="cell"><div class="k">Penetration</div><div class="v" id="rDepth">0<small> mm</small></div></div>
-        <div class="cell"><div class="k">Blows</div><div class="v" id="rBlows">0</div></div>
-        <div class="cell"><div class="k">DCP index</div><div class="v" id="rIndex">—<small> mm/blow</small></div></div>
+        <div class="cell"><div class="k">Penetration</div><div class="v" id="rDepth">0<small> cm</small></div></div>
+        <div class="cell"><div class="k">Remaining</div><div class="v" id="rLeft">100<small> cm</small></div></div>
       </div>
 
       <div class="logwrap">
@@ -263,7 +196,7 @@
           <div class="empty"><b>No readings yet</b>Start listening, or type a depth below.</div>
         </div>
         <div class="manual">
-          <input type="number" id="mDepth" placeholder="Depth in mm" inputmode="decimal">
+          <input type="number" id="mDepth" placeholder="Depth in cm" inputmode="decimal" step="0.1">
           <button id="btnAdd">Add</button>
         </div>
       </div>
@@ -271,12 +204,11 @@
   </div>
 
   <p class="note">
-    <b>Spoken commands:</b> <code>undo</code> or <code>scratch that</code> removes the last reading ·
-    <code>stop</code> ends listening. Readings that go backwards are flagged in red so you can check them
-    rather than being silently accepted.<br>
-    <b>CBR estimate</b> uses the ASTM D6951 correlation CBR&nbsp;=&nbsp;292&nbsp;/&nbsp;DN<sup>1.12</sup>
-    for the overall DCP index — a general-soil approximation, not a substitute for the layered analysis
-    or the soil-specific relations for high-plasticity clays.
+    Every depth in the table is editable &mdash; tap a figure, change it, and the increments and
+    flags recalculate. <b>Spoken commands:</b> <code>undo</code> or <code>scratch that</code> removes
+    the last reading &middot; <code>stop</code> ends listening. A reading that goes backwards, jumps
+    more than 25 cm at once, or passes 100 cm buzzes and turns red for you to check. Listening stops
+    automatically once 100 cm is reached.
   </p>
 </div>
 
@@ -285,21 +217,26 @@
   "use strict";
 
   var SESSION_SECONDS = 15 * 60;
+  var TARGET_CM = 100;
+  var MAX_JUMP = 25;
+
   var state = {
-    readings: [],       // {blows, cumBlows, depth, inc, flagged}
+    readings: [],      // {depth, inc, flag}  flag: null | 'back' | 'jump' | 'over'
     listening: false,
+    complete: false,
     remaining: SESSION_SECONDS,
     ticking: null,
-    maxDepth: 800,
     wakeLock: null
   };
 
-  var $ = function(id){ return document.getElementById(id); };
+  function $(id){ return document.getElementById(id); }
 
   /* ---------------- number parsing ---------------- */
   var SMALL = {zero:0,oh:0,o:0,nought:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,
     ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19};
   var TENS = {twenty:20,thirty:30,forty:40,fourty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+  var SKIP = {centimetres:1,centimeters:1,centimetre:1,centimeter:1,cm:1,cms:1,
+    millimetres:1,millimeters:1,mm:1,a:1,the:1,at:1,is:1,to:1,now:1,ok:1,okay:1};
 
   function parseNumbers(text){
     var tokens = text.toLowerCase().replace(/[^a-z0-9.\s-]/g,' ').split(/[\s-]+/).filter(Boolean);
@@ -316,15 +253,14 @@
 
     for(var i=0;i<tokens.length;i++){
       var t = tokens[i];
-
       if(/^\d+(\.\d+)?$/.test(t)){
-        if(decimals !== null){ decimals.push(t); }
+        if(decimals !== null){ decimals.push(t.replace(".","")); }
         else { flush(); cur = parseFloat(t); }
         continue;
       }
-      if(t === "point"){ if(cur === null) cur = 0; decimals = []; continue; }
+      if(t === "point" || t === "decimal"){ if(cur === null) cur = 0; decimals = []; continue; }
       if(t === "and"){ continue; }
-
+      if(SKIP[t]){ continue; }
       if(SMALL.hasOwnProperty(t)){
         if(decimals !== null){ decimals.push(String(SMALL[t])); }
         else if(cur === null){ cur = SMALL[t]; }
@@ -342,101 +278,150 @@
       }
       if(t === "hundred"){ if(cur === null) cur = 1; cur = cur * 100; decimals = null; continue; }
       if(t === "thousand"){ if(cur === null) cur = 1; cur = cur * 1000; decimals = null; continue; }
-      if(t === "millimetres" || t === "millimeters" || t === "mm" || t === "mil" || t === "blows" || t === "blow"){ continue; }
       flush();
     }
     flush();
     return out;
   }
 
-  /* ---------------- audio feedback ---------------- */
-  var actx = null;
-  function tone(freq, ms){
-    if(!$("beep").checked) return;
-    try{
-      if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-      if(actx.state === "suspended") actx.resume();
-      var o = actx.createOscillator(), g = actx.createGain();
-      o.type = "sine"; o.frequency.value = freq;
-      g.gain.setValueAtTime(0.0001, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.25, actx.currentTime + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + ms/1000);
-      o.connect(g); g.connect(actx.destination);
-      o.start(); o.stop(actx.currentTime + ms/1000 + 0.02);
-    }catch(e){}
+  /* ---------------- audio: loud, compressed ---------------- */
+  var actx = null, master = null;
+
+  function audio(){
+    if(!actx){
+      try{
+        actx = new (window.AudioContext || window.webkitAudioContext)();
+        var comp = actx.createDynamicsCompressor();
+        comp.threshold.value = -18; comp.ratio.value = 12;
+        comp.attack.value = 0.002; comp.release.value = 0.12;
+        master = actx.createGain();
+        master.gain.value = 1.0;
+        master.connect(comp); comp.connect(actx.destination);
+      }catch(e){ return null; }
+    }
+    if(actx.state === "suspended"){ try{ actx.resume(); }catch(e){} }
+    return actx;
   }
 
+  function blip(freq, ms, type, vol, delay){
+    var a = audio(); if(!a) return;
+    var t0 = a.currentTime + (delay || 0);
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol === undefined ? 0.9 : vol, t0 + 0.006);
+    g.gain.setValueAtTime(vol === undefined ? 0.9 : vol, t0 + ms/1000 - 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + ms/1000);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0 + ms/1000 + 0.03);
+  }
+
+  function soundConfirm(){
+    blip(1180, 110, "square", 0.95, 0);
+  }
+
+  function soundBuzz(){
+    // harsh low double buzz — meant to cut through site noise
+    blip(150, 260, "sawtooth", 1.0, 0);
+    blip(112, 260, "sawtooth", 1.0, 0);
+    blip(150, 300, "sawtooth", 1.0, 0.34);
+    blip(112, 300, "sawtooth", 1.0, 0.34);
+    if(navigator.vibrate) { try{ navigator.vibrate([260, 90, 300]); }catch(e){} }
+  }
+
+  function soundComplete(){
+    blip(880, 130, "square", 0.9, 0);
+    blip(1180, 130, "square", 0.9, 0.16);
+    blip(1560, 320, "square", 0.9, 0.32);
+    if(navigator.vibrate){ try{ navigator.vibrate([120,80,120,80,320]); }catch(e){} }
+  }
+
+  function soundUndo(){ blip(420, 130, "square", 0.8, 0); }
+
   /* ---------------- readings ---------------- */
-  function addReading(blows, depth){
-    if(!isFinite(depth) || depth < 0 || depth > 5000) return false;
-    var last = state.readings[state.readings.length-1];
-    var prevDepth = last ? last.depth : 0;
-    var prevBlows = last ? last.cumBlows : 0;
-    var inc = depth - prevDepth;
-    var flagged = inc < 0;
-    state.readings.push({
-      blows: blows, cumBlows: prevBlows + blows,
-      depth: depth, inc: inc, flagged: flagged
+  function flagFor(depth, prevDepth){
+    if(!isFinite(depth)) return "bad";
+    if(depth > TARGET_CM) return "over";
+    if(depth < prevDepth) return "back";
+    if(depth - prevDepth > MAX_JUMP) return "jump";
+    return null;
+  }
+
+  function recompute(){
+    var prev = 0;
+    state.readings.forEach(function(r){
+      r.inc = r.depth - prev;
+      r.flag = flagFor(r.depth, prev);
+      prev = r.depth;
     });
-    tone(flagged ? 300 : 880, flagged ? 220 : 90);
-    if(flagged) setTimeout(function(){ tone(300,220); }, 260);
+  }
+
+  function addReading(depth){
+    if(!isFinite(depth) || depth < 0) return false;
+    var prev = state.readings.length ? state.readings[state.readings.length-1].depth : 0;
+    var flag = flagFor(depth, prev);
+    state.readings.push({ depth: depth, inc: depth - prev, flag: flag });
+    if(flag) soundBuzz(); else soundConfirm();
     render();
+    checkComplete();
     return true;
   }
 
   function removeLast(){
     if(!state.readings.length) return;
     state.readings.pop();
-    tone(440,70);
-    render();
+    recompute(); soundUndo(); render();
+  }
+
+  function checkComplete(){
+    var last = state.readings[state.readings.length-1];
+    if(!last) return;
+    if(last.depth >= TARGET_CM && !state.complete){
+      state.complete = true;
+      stopListening();
+      $("donebox").textContent = "Test complete — 100 cm reached. Export the log or start a new test.";
+      $("donebox").style.display = "block";
+      setStatus("Complete — 100 cm", false);
+      $("status").className = "status done";
+      soundComplete();
+    }
   }
 
   /* ---------------- rendering ---------------- */
-  function fmt(n){
-    return (Math.round(n*10)/10).toString();
-  }
+  function fmt(n){ return (Math.round(n*10)/10).toString(); }
 
   function render(){
     var rs = state.readings;
     var last = rs[rs.length-1];
     var depth = last ? last.depth : 0;
-    var blows = last ? last.cumBlows : 0;
+    var shown = Math.min(Math.max(depth,0), TARGET_CM);
 
-    // auto-scale the profile column
-    var scale = 800;
-    while(depth > scale) scale += 400;
-    state.maxDepth = scale;
-    $("colfoot").textContent = "0 – " + scale + " mm";
+    $("rDepth").innerHTML = fmt(depth) + "<small> cm</small>";
+    $("rDepth").className = "v" + (depth >= TARGET_CM ? " done" : "");
+    $("rLeft").innerHTML = fmt(Math.max(0, TARGET_CM - depth)) + "<small> cm</small>";
 
-    $("rDepth").innerHTML = fmt(depth) + "<small> mm</small>";
-    $("rBlows").textContent = blows;
-
-    var dn = blows > 0 ? depth / blows : null;
-    if(dn && $("cbr").checked){
-      var cbr = 292 / Math.pow(dn, 1.12);
-      $("rIndex").innerHTML = fmt(dn) + "<small> mm/blow · CBR ≈ " + fmt(cbr) + "%</small>";
-    } else if(dn){
-      $("rIndex").innerHTML = fmt(dn) + "<small> mm/blow</small>";
-    } else {
-      $("rIndex").innerHTML = "—<small> mm/blow</small>";
-    }
-
-    // profile column
+    // fixed 0–100 cm profile
     var col = $("column"), H = col.clientHeight || 520;
-    Array.prototype.slice.call(col.querySelectorAll(".blowline,.grad")).forEach(function(n){ n.remove(); });
-    $("fill").style.height = (depth / scale * H) + "px";
-    $("tipmark").style.top = (depth / scale * H) + "px";
+    Array.prototype.slice.call(col.querySelectorAll(".readline,.grad")).forEach(function(n){ n.remove(); });
+    $("fill").style.height = (shown / TARGET_CM * H) + "px";
+    $("tipmark").style.top = (shown / TARGET_CM * H) + "px";
 
-    for(var d = 100; d < scale; d += 100){
+    for(var d = 5; d < TARGET_CM; d += 5){
       var g = document.createElement("div");
-      g.className = "grad"; g.style.top = (d/scale*H) + "px";
-      var s = document.createElement("span"); s.textContent = d;
-      g.appendChild(s); col.appendChild(g);
+      g.className = "grad" + (d % 10 === 0 ? " major" : "");
+      g.style.top = (d/TARGET_CM*H) + "px";
+      if(d % 10 === 0){
+        var s = document.createElement("span"); s.textContent = d;
+        g.appendChild(s);
+      }
+      col.appendChild(g);
     }
     rs.forEach(function(r){
+      if(r.depth < 0 || r.depth > TARGET_CM) return;
       var b = document.createElement("div");
-      b.className = "blowline" + (r.flagged ? " flagged" : "");
-      b.style.top = (r.depth/scale*H) + "px";
+      b.className = "readline" + (r.flag ? " flagged" : "");
+      b.style.top = (r.depth/TARGET_CM*H) + "px";
       col.appendChild(b);
     });
 
@@ -447,39 +432,45 @@
       host.innerHTML = '<div class="empty"><b>No readings yet</b>Start listening, or type a depth below.</div>';
       return;
     }
-    var html = '<table><thead><tr><th>No.</th><th>Blows</th><th>Depth mm</th><th>Increment</th><th>mm/blow</th><th></th></tr></thead><tbody>';
+    var REASON = {back:"Backwards", jump:"Big jump", over:"Over 100", bad:"Invalid"};
+    var html = '<table><thead><tr><th>No.</th><th>Depth cm</th><th>Increment</th><th>Check</th><th></th></tr></thead><tbody>';
     for(var i = rs.length - 1; i >= 0; i--){
       var r = rs[i];
-      var rate = r.blows > 0 ? fmt(r.inc / r.blows) : "—";
-      html += '<tr class="' + (i === rs.length-1 ? "latest " : "") + (r.flagged ? "flagged" : "") + '">' +
+      html += '<tr class="' + (i === rs.length-1 ? "latest " : "") + (r.flag ? "flagged" : "") + '">' +
         '<td>' + (i+1) + '</td>' +
-        '<td>' + r.cumBlows + '</td>' +
-        '<td>' + fmt(r.depth) + '</td>' +
+        '<td><input class="edit" type="number" step="0.1" inputmode="decimal" data-i="' + i + '" value="' + fmt(r.depth) + '"></td>' +
         '<td>' + (r.inc >= 0 ? "+" : "") + fmt(r.inc) + '</td>' +
-        '<td>' + rate + '</td>' +
-        '<td class="del" data-i="' + i + '" title="Delete">×</td></tr>';
+        '<td class="reason">' + (r.flag ? REASON[r.flag] : "") + '</td>' +
+        '<td class="del" data-i="' + i + '" title="Delete">&times;</td></tr>';
     }
     html += '</tbody></table>';
     host.innerHTML = html;
+
     Array.prototype.slice.call(host.querySelectorAll(".del")).forEach(function(td){
       td.addEventListener("click", function(){
         state.readings.splice(parseInt(td.getAttribute("data-i"),10), 1);
         recompute(); render();
       });
     });
-  }
-
-  function recompute(){
-    var prevDepth = 0, prevBlows = 0;
-    state.readings.forEach(function(r){
-      r.inc = r.depth - prevDepth;
-      r.flagged = r.inc < 0;
-      r.cumBlows = prevBlows + r.blows;
-      prevDepth = r.depth; prevBlows = r.cumBlows;
+    Array.prototype.slice.call(host.querySelectorAll("input.edit")).forEach(function(inp){
+      inp.addEventListener("change", function(){
+        var idx = parseInt(inp.getAttribute("data-i"),10);
+        var v = parseFloat(inp.value);
+        if(!isFinite(v)) { render(); return; }
+        state.readings[idx].depth = v;
+        recompute();
+        var stillBad = state.readings.some(function(r){ return !!r.flag; });
+        if(state.readings[idx].flag) soundBuzz(); else if(!stillBad) soundConfirm();
+        state.complete = false;
+        $("donebox").style.display = "none";
+        render();
+        checkComplete();
+      });
+      inp.addEventListener("keydown", function(e){ if(e.key === "Enter") inp.blur(); });
     });
   }
 
-  /* ---------------- session clock ---------------- */
+  /* ---------------- clock ---------------- */
   function renderClock(){
     var m = Math.floor(state.remaining/60), s = state.remaining % 60;
     var el = $("clock");
@@ -495,13 +486,13 @@
       if(state.remaining <= 0){
         clearInterval(state.ticking); state.ticking = null;
         stopListening();
-        setStatus("Session complete — 15 minutes elapsed", false);
-        tone(660,150); setTimeout(function(){ tone(440,300); }, 180);
+        setStatus("Session time elapsed", false);
+        soundComplete();
       }
     }, 1000);
   }
 
-  /* ---------------- speech recognition ---------------- */
+  /* ---------------- speech ---------------- */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var rec = null, restartTimer = null;
 
@@ -512,8 +503,8 @@
   }
 
   function warn(msg){
-    var w = $("warnbox");
-    w.textContent = msg; w.style.display = "block";
+    $("warnbox").textContent = msg;
+    $("warnbox").style.display = "block";
   }
 
   function handleUtterance(text){
@@ -521,31 +512,28 @@
 
     if(/\b(undo|scratch that|scratch|delete last|remove last)\b/.test(t)){
       removeLast();
+      $("heard").className = "heard";
       $("heard").innerHTML = '<b>Undo</b> — last reading removed';
       return;
     }
-    if(/\b(stop listening|stop recording|pause listening)\b/.test(t)){
+    if(/\b(stop listening|stop recording|pause listening|stop)\b/.test(t)){
       stopListening();
       return;
     }
 
     var nums = parseNumbers(t);
     if(!nums.length){
+      $("heard").className = "heard";
       $("heard").textContent = "Heard: " + text + " — no number found";
       return;
     }
 
-    var mode = $("mode").value;
-    var ok = false;
-    if(mode === "blowsdepth" && nums.length >= 2){
-      ok = addReading(nums[0], nums[1]);
-    } else {
-      var bpr = parseInt($("bpr").value, 10) || 1;
-      ok = addReading(bpr, nums[nums.length-1]);
-    }
-    $("heard").innerHTML = ok
-      ? 'Logged <b>' + fmt(state.readings[state.readings.length-1].depth) + ' mm</b> &nbsp;·&nbsp; heard: ' + text
-      : 'Heard: ' + text + ' — reading rejected';
+    var v = nums[nums.length-1];
+    addReading(v);
+    var r = state.readings[state.readings.length-1];
+    $("heard").className = "heard" + (r && r.flag ? " bad" : "");
+    $("heard").innerHTML = 'Logged <b>' + fmt(v) + ' cm</b>' +
+      (r && r.flag ? ' — check this' : '') + ' &nbsp;·&nbsp; heard: ' + text;
   }
 
   function buildRecogniser(){
@@ -558,14 +546,10 @@
     rec.onresult = function(e){
       for(var i = e.resultIndex; i < e.results.length; i++){
         var txt = e.results[i][0].transcript.trim();
-        if(e.results[i].isFinal){
-          handleUtterance(txt);
-        } else if(txt){
-          $("heard").textContent = "… " + txt;
-        }
+        if(e.results[i].isFinal){ handleUtterance(txt); }
+        else if(txt){ $("heard").className = "heard"; $("heard").textContent = "… " + txt; }
       }
     };
-
     rec.onerror = function(e){
       if(e.error === "not-allowed" || e.error === "service-not-allowed"){
         state.listening = false;
@@ -575,28 +559,28 @@
         $("btnStart").className = "primary";
       }
     };
-
     rec.onend = function(){
       if(state.listening){
         clearTimeout(restartTimer);
-        restartTimer = setTimeout(function(){
-          try{ rec.start(); }catch(err){}
-        }, 250);
+        restartTimer = setTimeout(function(){ try{ rec.start(); }catch(err){} }, 250);
       }
     };
   }
 
   async function requestWakeLock(){
     try{
-      if("wakeLock" in navigator){
-        state.wakeLock = await navigator.wakeLock.request("screen");
-      }
+      if("wakeLock" in navigator){ state.wakeLock = await navigator.wakeLock.request("screen"); }
     }catch(e){}
   }
 
   function startListening(){
+    audio(); // unlock audio on the user gesture
     if(!SR){
-      warn("This browser has no speech recognition. Use Chrome, Edge or Safari — or log readings with the manual field below.");
+      warn("This browser has no speech recognition. Use Chrome, Edge or Safari — or log readings with the field below.");
+      return;
+    }
+    if(state.complete){
+      warn("This test already reached 100 cm. Tap New test to start another.");
       return;
     }
     if(!rec) buildRecogniser();
@@ -607,7 +591,7 @@
     setStatus("Listening", true);
     $("btnStart").textContent = "Stop listening";
     $("btnStart").className = "stop";
-    tone(760, 80);
+    blip(880, 90, "square", 0.85, 0);
   }
 
   function stopListening(){
@@ -615,7 +599,7 @@
     clearTimeout(restartTimer);
     if(rec){ try{ rec.stop(); }catch(e){} }
     if(state.wakeLock){ try{ state.wakeLock.release(); }catch(e){} state.wakeLock = null; }
-    setStatus("Microphone off", false);
+    if(!state.complete) setStatus("Microphone off", false);
     $("btnStart").textContent = "Start listening";
     $("btnStart").className = "primary";
   }
@@ -623,16 +607,16 @@
   /* ---------------- csv ---------------- */
   function exportCsv(){
     if(!state.readings.length) return;
-    var lines = ["reading,blows_this_increment,cumulative_blows,depth_mm,increment_mm,mm_per_blow,flagged"];
+    var lines = ["reading,depth_cm,increment_cm,check"];
     state.readings.forEach(function(r,i){
-      lines.push([i+1, r.blows, r.cumBlows, fmt(r.depth), fmt(r.inc),
-        r.blows ? fmt(r.inc/r.blows) : "", r.flagged ? "CHECK" : ""].join(","));
+      var REASON = {back:"BACKWARDS", jump:"BIG JUMP", over:"OVER 100", bad:"INVALID"};
+      lines.push([i+1, fmt(r.depth), fmt(r.inc), r.flag ? REASON[r.flag] : ""].join(","));
     });
     var blob = new Blob([lines.join("\n")], {type:"text/csv"});
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "dcp-log-" + new Date().toISOString().slice(0,16).replace(/[:T]/g,"") + ".csv";
-    a.click();
+    document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
   }
 
@@ -645,22 +629,21 @@
   $("btnReset").addEventListener("click", function(){
     if(state.readings.length && !confirm("Clear all readings and reset the 15-minute clock?")) return;
     state.readings = [];
+    state.complete = false;
     state.remaining = SESSION_SECONDS;
     clearInterval(state.ticking); state.ticking = null;
+    $("donebox").style.display = "none";
+    $("warnbox").style.display = "none";
+    setStatus(state.listening ? "Listening" : "Microphone off", state.listening);
     renderClock(); render();
   });
   $("btnAdd").addEventListener("click", function(){
+    audio();
     var v = parseFloat($("mDepth").value);
-    if(isFinite(v)){
-      addReading(parseInt($("bpr").value,10) || 1, v);
-      $("mDepth").value = "";
-    }
+    if(isFinite(v)){ addReading(v); $("mDepth").value = ""; }
     $("mDepth").focus();
   });
-  $("mDepth").addEventListener("keydown", function(e){
-    if(e.key === "Enter") $("btnAdd").click();
-  });
-  $("cbr").addEventListener("change", render);
+  $("mDepth").addEventListener("keydown", function(e){ if(e.key === "Enter") $("btnAdd").click(); });
   window.addEventListener("resize", render);
   document.addEventListener("visibilitychange", function(){
     if(document.visibilityState === "visible" && state.listening) requestWakeLock();
