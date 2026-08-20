@@ -67,7 +67,23 @@
   button.primary{background:var(--amber);border-color:var(--amber);color:#1E2119;}
   button.primary:hover{background:#ffc548;}
   button.stop{border-color:var(--alert);color:var(--alert);}
+  button.go{background:#8CBF3F;border-color:#8CBF3F;color:#1E2119;}
+  button.go:hover{background:#9FD44D;border-color:#9FD44D;}
   button:disabled{opacity:.35;cursor:not-allowed;}
+
+  .fields{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--edge);border:1px solid var(--edge);border-radius:3px;}
+  @media (max-width:520px){.fields{grid-template-columns:1fr 1fr;}}
+  .fld{background:var(--shale);padding:9px 11px;}
+  .fld label{display:block;font-family:var(--data);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .fld input{width:100%;font-family:var(--data);font-size:17px;font-weight:500;
+    background:transparent;color:var(--chalk);border:none;border-bottom:1px solid var(--edge);
+    padding:3px 0;border-radius:0;-moz-appearance:textfield;}
+  .fld input:focus{outline:none;border-bottom-color:var(--amber);}
+  .fld input::-webkit-outer-spin-button,.fld input::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;}
+  .fld input::placeholder{color:var(--edge);}
 
   .split{display:grid;grid-template-columns:150px 1fr;gap:16px;margin-top:18px;align-items:start;}
   @media (max-width:640px){.split{grid-template-columns:104px 1fr;gap:11px;}}
@@ -156,6 +172,25 @@
   <div class="banner err" id="warnbox"></div>
   <div class="banner ok" id="donebox"></div>
 
+  <div class="fields">
+    <div class="fld">
+      <label for="fPlot">Plot number</label>
+      <input type="text" id="fPlot" placeholder="e.g. 14" autocomplete="off">
+    </div>
+    <div class="fld">
+      <label for="fSection">Section</label>
+      <input type="text" id="fSection" placeholder="e.g. B" autocomplete="off">
+    </div>
+    <div class="fld">
+      <label for="fTest">Test number</label>
+      <input type="number" id="fTest" placeholder="1" step="1" inputmode="numeric">
+    </div>
+    <div class="fld">
+      <label for="fChain">Chainage</label>
+      <input type="number" id="fChain" placeholder="0" step="1" inputmode="decimal">
+    </div>
+  </div>
+
   <div class="earpanel">
     <div class="row">
       <span class="dot" id="dot"></span>
@@ -166,8 +201,8 @@
     <div class="controls">
       <button class="primary" id="btnStart">Start listening</button>
       <button id="btnUndo">Undo last</button>
-      <button id="btnCsv">Export CSV</button>
-      <button id="btnReset">New test</button>
+      <button class="go" id="btnNext">Next test</button>
+      <button id="btnReset">Wipe test</button>
     </div>
   </div>
 
@@ -208,7 +243,10 @@
     flags recalculate. <b>Spoken commands:</b> <code>undo</code> or <code>scratch that</code> removes
     the last reading &middot; <code>stop</code> ends listening. A reading that goes backwards, jumps
     more than 25 cm at once, or passes 100 cm buzzes and turns red for you to check. Listening stops
-    automatically once 100 cm is reached.
+    automatically once 100 cm is reached.<br>
+    <b>Next test</b> saves the CSV, then keeps the plot and section, adds 1 to the test number and 25
+    to the chainage &mdash; all four stay editable. <b>Wipe test</b> clears the readings without
+    saving. Next test, Wipe test and Undo all ask before they act.
   </p>
 </div>
 
@@ -369,9 +407,12 @@
   }
 
   function removeLast(){
-    if(!state.readings.length) return;
+    if(!state.readings.length) return false;
+    var last = state.readings[state.readings.length-1];
+    if(!confirm("Remove the last reading (" + fmt(last.depth) + " cm)?")) return false;
     state.readings.pop();
     recompute(); soundUndo(); render();
+    return true;
   }
 
   function checkComplete(){
@@ -511,9 +552,9 @@
     var t = text.toLowerCase();
 
     if(/\b(undo|scratch that|scratch|delete last|remove last)\b/.test(t)){
-      removeLast();
+      var done = removeLast();
       $("heard").className = "heard";
-      $("heard").innerHTML = '<b>Undo</b> — last reading removed';
+      $("heard").innerHTML = done ? '<b>Undo</b> — last reading removed' : '<b>Undo cancelled</b>';
       return;
     }
     if(/\b(stop listening|stop recording|pause listening|stop)\b/.test(t)){
@@ -605,19 +646,70 @@
   }
 
   /* ---------------- csv ---------------- */
+  function slug(v){
+    var s = String(v === undefined || v === null ? "" : v).trim()
+      .replace(/[^A-Za-z0-9.]+/g, "-").replace(/^-+|-+$/g, "");
+    return s || "na";
+  }
+
+  function csvCell(v){
+    var s = String(v === undefined || v === null ? "" : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }
+
   function exportCsv(){
-    if(!state.readings.length) return;
-    var lines = ["reading,depth_cm,increment_cm,check"];
+    if(!state.readings.length) return false;
+    var plot    = $("fPlot").value.trim();
+    var section = $("fSection").value.trim();
+    var test    = $("fTest").value.trim();
+    var chain   = $("fChain").value.trim();
+
+    var lines = ["reading,depth_cm,test_number,plot_number,section,chainage"];
     state.readings.forEach(function(r,i){
-      var REASON = {back:"BACKWARDS", jump:"BIG JUMP", over:"OVER 100", bad:"INVALID"};
-      lines.push([i+1, fmt(r.depth), fmt(r.inc), r.flag ? REASON[r.flag] : ""].join(","));
+      lines.push(i === 0
+        ? [1, fmt(r.depth), csvCell(test), csvCell(plot), csvCell(section), csvCell(chain)].join(",")
+        : [i+1, fmt(r.depth), "", "", "", ""].join(","));
     });
+
     var blob = new Blob([lines.join("\n")], {type:"text/csv"});
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "dcp-log-" + new Date().toISOString().slice(0,16).replace(/[:T]/g,"") + ".csv";
+    a.download = "dcp-log-" + slug(plot) + "-" + slug(section) + "-" + slug(test) + "-" + slug(chain) + ".csv";
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    return true;
+  }
+
+  function clearReadings(){
+    state.readings = [];
+    state.complete = false;
+    state.remaining = SESSION_SECONDS;
+    clearInterval(state.ticking); state.ticking = null;
+    $("donebox").style.display = "none";
+    $("warnbox").style.display = "none";
+    $("heard").className = "heard";
+    setStatus(state.listening ? "Listening" : "Microphone off", state.listening);
+    renderClock(); render();
+  }
+
+  function nextTest(){
+    audio();
+    var nextT = (function(){ var t = parseFloat($("fTest").value); return (isFinite(t)?t:0)+1; })();
+    var nextC = (function(){ var c = parseFloat($("fChain").value); return (isFinite(c)?c:0)+25; })();
+    var msg = state.readings.length
+      ? "Save this test and move on?\n\nSaves " + state.readings.length + " reading" +
+        (state.readings.length===1?"":"s") + ", then starts test " + nextT + " at chainage " + nextC + "."
+      : "There are no readings to save.\n\nStart test " + nextT + " at chainage " + nextC + " anyway?";
+    if(!confirm(msg)) return;
+
+    var saved = exportCsv();
+    $("fTest").value = nextT;
+    $("fChain").value = nextC;
+    clearReadings();
+    $("heard").innerHTML = (saved ? 'Saved — now on' : 'Nothing saved — now on') +
+      ' test <b>' + nextT + '</b>, chainage <b>' + nextC + '</b>';
+    blip(760, 90, "square", 0.9, 0);
+    blip(1140, 140, "square", 0.9, 0.11);
   }
 
   /* ---------------- wiring ---------------- */
@@ -625,17 +717,12 @@
     state.listening ? stopListening() : startListening();
   });
   $("btnUndo").addEventListener("click", removeLast);
-  $("btnCsv").addEventListener("click", exportCsv);
+  $("btnNext").addEventListener("click", nextTest);
   $("btnReset").addEventListener("click", function(){
-    if(state.readings.length && !confirm("Clear all readings and reset the 15-minute clock?")) return;
-    state.readings = [];
-    state.complete = false;
-    state.remaining = SESSION_SECONDS;
-    clearInterval(state.ticking); state.ticking = null;
-    $("donebox").style.display = "none";
-    $("warnbox").style.display = "none";
-    setStatus(state.listening ? "Listening" : "Microphone off", state.listening);
-    renderClock(); render();
+    var n = state.readings.length;
+    if(!confirm(n ? "Wipe all " + n + " reading" + (n===1?"":"s") + " without saving?"
+                  : "Reset the clock and start a fresh test?")) return;
+    clearReadings();
   });
   $("btnAdd").addEventListener("click", function(){
     audio();
