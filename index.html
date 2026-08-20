@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DCP Voice Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --loam:#1E2119;
+    --shale:#2A2E24;
+    --edge:#3D4335;
+    --chalk:#E9ECE0;
+    --muted:#949B87;
+    --amber:#F0B429;
+    --clay:#B26A43;
+    --alert:#E05A4F;
+    --display:"Barlow Condensed", "Haettenschweiler", Impact, sans-serif;
+    --body:"IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --data:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--loam);
+    color:var(--chalk);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:14px 14px 100px;}
+
+  /* ---------- header ---------- */
+  .masthead{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:12px;padding-bottom:10px;border-bottom:1px solid var(--edge);
+  }
+  .masthead h1{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:30px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin:0;line-height:1;
+  }
+  .masthead .sub{
+    font-family:var(--data);font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);margin-top:5px;
+  }
+  .clock{
+    font-family:var(--data);font-size:26px;font-weight:500;
+    letter-spacing:.02em;line-height:1;text-align:right;
+  }
+  .clock small{display:block;font-size:9px;letter-spacing:.18em;color:var(--muted);margin-top:5px;text-transform:uppercase;}
+  .clock.low{color:var(--amber);}
+
+  /* ---------- listening bar ---------- */
+  .earpanel{
+    margin-top:14px;background:var(--shale);border:1px solid var(--edge);
+    border-radius:3px;padding:14px;
+  }
+  .earpanel .row{display:flex;align-items:center;gap:12px;}
+  .dot{
+    width:11px;height:11px;border-radius:50%;background:var(--edge);flex:none;
+  }
+  .dot.live{background:var(--amber);animation:pulse 1.5s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.8);}}
+  .status{
+    font-family:var(--data);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .status.live{color:var(--amber);}
+  .heard{
+    font-family:var(--data);font-size:15px;margin-top:10px;
+    color:var(--muted);min-height:22px;word-break:break-word;
+  }
+  .heard b{color:var(--chalk);font-weight:500;}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  button{
+    font-family:var(--display);font-size:17px;font-weight:600;
+    letter-spacing:.07em;text-transform:uppercase;
+    background:transparent;color:var(--chalk);
+    border:1px solid var(--edge);border-radius:2px;
+    padding:9px 16px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+  }
+  button:hover{border-color:var(--muted);}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  button.primary{background:var(--amber);border-color:var(--amber);color:#1E2119;}
+  button.primary:hover{background:#ffc548;}
+  button.stop{border-color:var(--alert);color:var(--alert);}
+  button:disabled{opacity:.35;cursor:not-allowed;}
+
+  .opts{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid var(--edge);}
+  label.opt{
+    font-family:var(--data);font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted);
+    display:flex;align-items:center;gap:7px;cursor:pointer;
+  }
+  select,input[type=number]{
+    font-family:var(--data);font-size:12px;background:var(--loam);color:var(--chalk);
+    border:1px solid var(--edge);border-radius:2px;padding:5px 7px;
+  }
+  input[type=checkbox]{accent-color:var(--amber);width:15px;height:15px;}
+
+  /* ---------- main split ---------- */
+  .split{display:grid;grid-template-columns:150px 1fr;gap:16px;margin-top:18px;align-items:start;}
+  @media (max-width:640px){.split{grid-template-columns:104px 1fr;gap:11px;}}
+
+  /* ---------- strata column (signature) ---------- */
+  .strata{position:relative;}
+  .strata-head{
+    font-family:var(--data);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:7px;
+  }
+  .column{
+    position:relative;height:520px;background:var(--shale);
+    border:1px solid var(--edge);border-radius:2px;overflow:hidden;
+  }
+  .fill{
+    position:absolute;left:0;right:0;top:0;height:0;
+    background:linear-gradient(180deg,#C77B4E 0%,var(--clay) 45%,#7E4A2E 100%);
+    transition:height .35s cubic-bezier(.2,.7,.3,1);
+  }
+  .blowline{
+    position:absolute;left:0;right:0;height:1px;
+    background:rgba(30,33,25,.5);
+  }
+  .blowline.flagged{background:var(--alert);height:2px;}
+  .grad{position:absolute;left:0;right:0;height:1px;background:var(--edge);}
+  .grad span{
+    position:absolute;right:4px;top:-13px;
+    font-family:var(--data);font-size:9px;color:var(--muted);
+  }
+  .tipmark{
+    position:absolute;left:0;right:0;height:2px;background:var(--amber);
+    transition:top .35s cubic-bezier(.2,.7,.3,1);
+  }
+  .colfoot{
+    font-family:var(--data);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-top:7px;text-align:center;
+  }
+
+  /* ---------- readout ---------- */
+  .readout{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:2px;}
+  .cell{background:var(--shale);padding:11px 12px;}
+  .cell .k{font-family:var(--data);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  .cell .v{font-family:var(--data);font-size:23px;font-weight:500;margin-top:3px;line-height:1;}
+  .cell .v small{font-size:11px;color:var(--muted);font-weight:400;}
+  @media (max-width:520px){.cell .v{font-size:19px;}}
+
+  /* ---------- log ---------- */
+  .logwrap{margin-top:14px;border:1px solid var(--edge);border-radius:2px;overflow:hidden;}
+  .loghead{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px;background:var(--shale);border-bottom:1px solid var(--edge);
+  }
+  .loghead h2{
+    font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;margin:0;
+  }
+  table{width:100%;border-collapse:collapse;font-family:var(--data);font-size:13px;}
+  th{
+    font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+    font-weight:500;text-align:right;padding:8px 10px;border-bottom:1px solid var(--edge);
+  }
+  th:first-child{text-align:left;}
+  td{padding:9px 10px;text-align:right;border-bottom:1px solid rgba(61,67,53,.5);}
+  td:first-child{text-align:left;color:var(--muted);}
+  tr.latest td{background:rgba(240,180,41,.07);}
+  tr.flagged td{color:var(--alert);}
+  td.del{width:34px;text-align:center;color:var(--muted);cursor:pointer;user-select:none;}
+  td.del:hover{color:var(--alert);}
+  .empty{padding:30px 14px;text-align:center;color:var(--muted);font-size:14px;}
+  .empty b{display:block;color:var(--chalk);font-family:var(--display);font-size:19px;
+    letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-weight:600;}
+
+  /* ---------- manual entry ---------- */
+  .manual{display:flex;gap:8px;padding:11px 12px;background:var(--shale);border-top:1px solid var(--edge);}
+  .manual input{flex:1;min-width:0;}
+
+  .note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.6;}
+  .note code{font-family:var(--data);color:var(--chalk);font-size:11px;}
+  .warnbox{
+    margin-top:14px;padding:12px 14px;border:1px solid var(--alert);
+    border-radius:2px;color:var(--alert);font-size:13px;display:none;
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <h1>DCP Voice Log</h1>
+      <div class="sub">Dynamic cone penetrometer &middot; hands-free capture</div>
+    </div>
+    <div class="clock" id="clock">15:00<small>Session</small></div>
+  </div>
+
+  <div class="warnbox" id="warnbox"></div>
+
+  <div class="earpanel">
+    <div class="row">
+      <span class="dot" id="dot"></span>
+      <span class="status" id="status">Microphone off</span>
+    </div>
+    <div class="heard" id="heard">Say a depth reading after each blow — “one hundred and twenty five”.</div>
+
+    <div class="controls">
+      <button class="primary" id="btnStart">Start listening</button>
+      <button id="btnUndo">Undo last</button>
+      <button id="btnCsv">Export CSV</button>
+      <button id="btnReset">New test</button>
+    </div>
+
+    <div class="opts">
+      <label class="opt">Mode
+        <select id="mode">
+          <option value="depth">Depth only — 1 blow each</option>
+          <option value="blowsdepth">Blows, then depth</option>
+        </select>
+      </label>
+      <label class="opt">Blows per reading
+        <input type="number" id="bpr" value="1" min="1" max="50" style="width:56px">
+      </label>
+      <label class="opt"><input type="checkbox" id="beep" checked> Confirm beep</label>
+      <label class="opt"><input type="checkbox" id="cbr"> Show CBR estimate</label>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="strata">
+      <div class="strata-head">Profile</div>
+      <div class="column" id="column">
+        <div class="fill" id="fill"></div>
+        <div class="tipmark" id="tipmark" style="top:0"></div>
+      </div>
+      <div class="colfoot" id="colfoot">0 – 800 mm</div>
+    </div>
+
+    <div>
+      <div class="readout">
+        <div class="cell"><div class="k">Penetration</div><div class="v" id="rDepth">0<small> mm</small></div></div>
+        <div class="cell"><div class="k">Blows</div><div class="v" id="rBlows">0</div></div>
+        <div class="cell"><div class="k">DCP index</div><div class="v" id="rIndex">—<small> mm/blow</small></div></div>
+      </div>
+
+      <div class="logwrap">
+        <div class="loghead">
+          <h2>Readings</h2>
+          <span class="status" id="count">0 entries</span>
+        </div>
+        <div id="tableHost">
+          <div class="empty"><b>No readings yet</b>Start listening, or type a depth below.</div>
+        </div>
+        <div class="manual">
+          <input type="number" id="mDepth" placeholder="Depth in mm" inputmode="decimal">
+          <button id="btnAdd">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Spoken commands:</b> <code>undo</code> or <code>scratch that</code> removes the last reading ·
+    <code>stop</code> ends listening. Readings that go backwards are flagged in red so you can check them
+    rather than being silently accepted.<br>
+    <b>CBR estimate</b> uses the ASTM D6951 correlation CBR&nbsp;=&nbsp;292&nbsp;/&nbsp;DN<sup>1.12</sup>
+    for the overall DCP index — a general-soil approximation, not a substitute for the layered analysis
+    or the soil-specific relations for high-plasticity clays.
+  </p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SESSION_SECONDS = 15 * 60;
+  var state = {
+    readings: [],       // {blows, cumBlows, depth, inc, flagged}
+    listening: false,
+    remaining: SESSION_SECONDS,
+    ticking: null,
+    maxDepth: 800,
+    wakeLock: null
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------------- number parsing ---------------- */
+  var SMALL = {zero:0,oh:0,o:0,nought:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,
+    ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19};
+  var TENS = {twenty:20,thirty:30,forty:40,fourty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+
+  function parseNumbers(text){
+    var tokens = text.toLowerCase().replace(/[^a-z0-9.\s-]/g,' ').split(/[\s-]+/).filter(Boolean);
+    var out = [], cur = null, decimals = null;
+
+    function flush(){
+      if(cur !== null){
+        var v = cur;
+        if(decimals !== null && decimals.length) v = parseFloat(cur + "." + decimals.join(""));
+        out.push(v);
+      }
+      cur = null; decimals = null;
+    }
+
+    for(var i=0;i<tokens.length;i++){
+      var t = tokens[i];
+
+      if(/^\d+(\.\d+)?$/.test(t)){
+        if(decimals !== null){ decimals.push(t); }
+        else { flush(); cur = parseFloat(t); }
+        continue;
+      }
+      if(t === "point"){ if(cur === null) cur = 0; decimals = []; continue; }
+      if(t === "and"){ continue; }
+
+      if(SMALL.hasOwnProperty(t)){
+        if(decimals !== null){ decimals.push(String(SMALL[t])); }
+        else if(cur === null){ cur = SMALL[t]; }
+        else if(cur % 100 === 0 && cur > 0){ cur += SMALL[t]; }
+        else if(cur % 10 === 0 && cur >= 20){ cur += SMALL[t]; }
+        else { flush(); cur = SMALL[t]; }
+        continue;
+      }
+      if(TENS.hasOwnProperty(t)){
+        if(decimals !== null){ flush(); cur = TENS[t]; }
+        else if(cur === null){ cur = TENS[t]; }
+        else if(cur % 100 === 0 && cur > 0){ cur += TENS[t]; }
+        else { flush(); cur = TENS[t]; }
+        continue;
+      }
+      if(t === "hundred"){ if(cur === null) cur = 1; cur = cur * 100; decimals = null; continue; }
+      if(t === "thousand"){ if(cur === null) cur = 1; cur = cur * 1000; decimals = null; continue; }
+      if(t === "millimetres" || t === "millimeters" || t === "mm" || t === "mil" || t === "blows" || t === "blow"){ continue; }
+      flush();
+    }
+    flush();
+    return out;
+  }
+
+  /* ---------------- audio feedback ---------------- */
+  var actx = null;
+  function tone(freq, ms){
+    if(!$("beep").checked) return;
+    try{
+      if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if(actx.state === "suspended") actx.resume();
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.25, actx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + ms/1000);
+      o.connect(g); g.connect(actx.destination);
+      o.start(); o.stop(actx.currentTime + ms/1000 + 0.02);
+    }catch(e){}
+  }
+
+  /* ---------------- readings ---------------- */
+  function addReading(blows, depth){
+    if(!isFinite(depth) || depth < 0 || depth > 5000) return false;
+    var last = state.readings[state.readings.length-1];
+    var prevDepth = last ? last.depth : 0;
+    var prevBlows = last ? last.cumBlows : 0;
+    var inc = depth - prevDepth;
+    var flagged = inc < 0;
+    state.readings.push({
+      blows: blows, cumBlows: prevBlows + blows,
+      depth: depth, inc: inc, flagged: flagged
+    });
+    tone(flagged ? 300 : 880, flagged ? 220 : 90);
+    if(flagged) setTimeout(function(){ tone(300,220); }, 260);
+    render();
+    return true;
+  }
+
+  function removeLast(){
+    if(!state.readings.length) return;
+    state.readings.pop();
+    tone(440,70);
+    render();
+  }
+
+  /* ---------------- rendering ---------------- */
+  function fmt(n){
+    return (Math.round(n*10)/10).toString();
+  }
+
+  function render(){
+    var rs = state.readings;
+    var last = rs[rs.length-1];
+    var depth = last ? last.depth : 0;
+    var blows = last ? last.cumBlows : 0;
+
+    // auto-scale the profile column
+    var scale = 800;
+    while(depth > scale) scale += 400;
+    state.maxDepth = scale;
+    $("colfoot").textContent = "0 – " + scale + " mm";
+
+    $("rDepth").innerHTML = fmt(depth) + "<small> mm</small>";
+    $("rBlows").textContent = blows;
+
+    var dn = blows > 0 ? depth / blows : null;
+    if(dn && $("cbr").checked){
+      var cbr = 292 / Math.pow(dn, 1.12);
+      $("rIndex").innerHTML = fmt(dn) + "<small> mm/blow · CBR ≈ " + fmt(cbr) + "%</small>";
+    } else if(dn){
+      $("rIndex").innerHTML = fmt(dn) + "<small> mm/blow</small>";
+    } else {
+      $("rIndex").innerHTML = "—<small> mm/blow</small>";
+    }
+
+    // profile column
+    var col = $("column"), H = col.clientHeight || 520;
+    Array.prototype.slice.call(col.querySelectorAll(".blowline,.grad")).forEach(function(n){ n.remove(); });
+    $("fill").style.height = (depth / scale * H) + "px";
+    $("tipmark").style.top = (depth / scale * H) + "px";
+
+    for(var d = 100; d < scale; d += 100){
+      var g = document.createElement("div");
+      g.className = "grad"; g.style.top = (d/scale*H) + "px";
+      var s = document.createElement("span"); s.textContent = d;
+      g.appendChild(s); col.appendChild(g);
+    }
+    rs.forEach(function(r){
+      var b = document.createElement("div");
+      b.className = "blowline" + (r.flagged ? " flagged" : "");
+      b.style.top = (r.depth/scale*H) + "px";
+      col.appendChild(b);
+    });
+
+    // table
+    $("count").textContent = rs.length + (rs.length === 1 ? " entry" : " entries");
+    var host = $("tableHost");
+    if(!rs.length){
+      host.innerHTML = '<div class="empty"><b>No readings yet</b>Start listening, or type a depth below.</div>';
+      return;
+    }
+    var html = '<table><thead><tr><th>No.</th><th>Blows</th><th>Depth mm</th><th>Increment</th><th>mm/blow</th><th></th></tr></thead><tbody>';
+    for(var i = rs.length - 1; i >= 0; i--){
+      var r = rs[i];
+      var rate = r.blows > 0 ? fmt(r.inc / r.blows) : "—";
+      html += '<tr class="' + (i === rs.length-1 ? "latest " : "") + (r.flagged ? "flagged" : "") + '">' +
+        '<td>' + (i+1) + '</td>' +
+        '<td>' + r.cumBlows + '</td>' +
+        '<td>' + fmt(r.depth) + '</td>' +
+        '<td>' + (r.inc >= 0 ? "+" : "") + fmt(r.inc) + '</td>' +
+        '<td>' + rate + '</td>' +
+        '<td class="del" data-i="' + i + '" title="Delete">×</td></tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+    Array.prototype.slice.call(host.querySelectorAll(".del")).forEach(function(td){
+      td.addEventListener("click", function(){
+        state.readings.splice(parseInt(td.getAttribute("data-i"),10), 1);
+        recompute(); render();
+      });
+    });
+  }
+
+  function recompute(){
+    var prevDepth = 0, prevBlows = 0;
+    state.readings.forEach(function(r){
+      r.inc = r.depth - prevDepth;
+      r.flagged = r.inc < 0;
+      r.cumBlows = prevBlows + r.blows;
+      prevDepth = r.depth; prevBlows = r.cumBlows;
+    });
+  }
+
+  /* ---------------- session clock ---------------- */
+  function renderClock(){
+    var m = Math.floor(state.remaining/60), s = state.remaining % 60;
+    var el = $("clock");
+    el.firstChild.nodeValue = m + ":" + (s<10?"0":"") + s;
+    el.className = "clock" + (state.remaining <= 60 ? " low" : "");
+  }
+
+  function startClock(){
+    if(state.ticking) return;
+    state.ticking = setInterval(function(){
+      state.remaining--;
+      renderClock();
+      if(state.remaining <= 0){
+        clearInterval(state.ticking); state.ticking = null;
+        stopListening();
+        setStatus("Session complete — 15 minutes elapsed", false);
+        tone(660,150); setTimeout(function(){ tone(440,300); }, 180);
+      }
+    }, 1000);
+  }
+
+  /* ---------------- speech recognition ---------------- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, restartTimer = null;
+
+  function setStatus(text, live){
+    $("status").textContent = text;
+    $("status").className = "status" + (live ? " live" : "");
+    $("dot").className = "dot" + (live ? " live" : "");
+  }
+
+  function warn(msg){
+    var w = $("warnbox");
+    w.textContent = msg; w.style.display = "block";
+  }
+
+  function handleUtterance(text){
+    var t = text.toLowerCase();
+
+    if(/\b(undo|scratch that|scratch|delete last|remove last)\b/.test(t)){
+      removeLast();
+      $("heard").innerHTML = '<b>Undo</b> — last reading removed';
+      return;
+    }
+    if(/\b(stop listening|stop recording|pause listening)\b/.test(t)){
+      stopListening();
+      return;
+    }
+
+    var nums = parseNumbers(t);
+    if(!nums.length){
+      $("heard").textContent = "Heard: " + text + " — no number found";
+      return;
+    }
+
+    var mode = $("mode").value;
+    var ok = false;
+    if(mode === "blowsdepth" && nums.length >= 2){
+      ok = addReading(nums[0], nums[1]);
+    } else {
+      var bpr = parseInt($("bpr").value, 10) || 1;
+      ok = addReading(bpr, nums[nums.length-1]);
+    }
+    $("heard").innerHTML = ok
+      ? 'Logged <b>' + fmt(state.readings[state.readings.length-1].depth) + ' mm</b> &nbsp;·&nbsp; heard: ' + text
+      : 'Heard: ' + text + ' — reading rejected';
+  }
+
+  function buildRecogniser(){
+    rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = "en-GB";
+    rec.maxAlternatives = 1;
+
+    rec.onresult = function(e){
+      for(var i = e.resultIndex; i < e.results.length; i++){
+        var txt = e.results[i][0].transcript.trim();
+        if(e.results[i].isFinal){
+          handleUtterance(txt);
+        } else if(txt){
+          $("heard").textContent = "… " + txt;
+        }
+      }
+    };
+
+    rec.onerror = function(e){
+      if(e.error === "not-allowed" || e.error === "service-not-allowed"){
+        state.listening = false;
+        setStatus("Microphone blocked", false);
+        warn("Microphone access was refused. Allow it in your browser's site settings, then start again.");
+        $("btnStart").textContent = "Start listening";
+        $("btnStart").className = "primary";
+      }
+    };
+
+    rec.onend = function(){
+      if(state.listening){
+        clearTimeout(restartTimer);
+        restartTimer = setTimeout(function(){
+          try{ rec.start(); }catch(err){}
+        }, 250);
+      }
+    };
+  }
+
+  async function requestWakeLock(){
+    try{
+      if("wakeLock" in navigator){
+        state.wakeLock = await navigator.wakeLock.request("screen");
+      }
+    }catch(e){}
+  }
+
+  function startListening(){
+    if(!SR){
+      warn("This browser has no speech recognition. Use Chrome, Edge or Safari — or log readings with the manual field below.");
+      return;
+    }
+    if(!rec) buildRecogniser();
+    state.listening = true;
+    try{ rec.start(); }catch(e){}
+    requestWakeLock();
+    startClock();
+    setStatus("Listening", true);
+    $("btnStart").textContent = "Stop listening";
+    $("btnStart").className = "stop";
+    tone(760, 80);
+  }
+
+  function stopListening(){
+    state.listening = false;
+    clearTimeout(restartTimer);
+    if(rec){ try{ rec.stop(); }catch(e){} }
+    if(state.wakeLock){ try{ state.wakeLock.release(); }catch(e){} state.wakeLock = null; }
+    setStatus("Microphone off", false);
+    $("btnStart").textContent = "Start listening";
+    $("btnStart").className = "primary";
+  }
+
+  /* ---------------- csv ---------------- */
+  function exportCsv(){
+    if(!state.readings.length) return;
+    var lines = ["reading,blows_this_increment,cumulative_blows,depth_mm,increment_mm,mm_per_blow,flagged"];
+    state.readings.forEach(function(r,i){
+      lines.push([i+1, r.blows, r.cumBlows, fmt(r.depth), fmt(r.inc),
+        r.blows ? fmt(r.inc/r.blows) : "", r.flagged ? "CHECK" : ""].join(","));
+    });
+    var blob = new Blob([lines.join("\n")], {type:"text/csv"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dcp-log-" + new Date().toISOString().slice(0,16).replace(/[:T]/g,"") + ".csv";
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  /* ---------------- wiring ---------------- */
+  $("btnStart").addEventListener("click", function(){
+    state.listening ? stopListening() : startListening();
+  });
+  $("btnUndo").addEventListener("click", removeLast);
+  $("btnCsv").addEventListener("click", exportCsv);
+  $("btnReset").addEventListener("click", function(){
+    if(state.readings.length && !confirm("Clear all readings and reset the 15-minute clock?")) return;
+    state.readings = [];
+    state.remaining = SESSION_SECONDS;
+    clearInterval(state.ticking); state.ticking = null;
+    renderClock(); render();
+  });
+  $("btnAdd").addEventListener("click", function(){
+    var v = parseFloat($("mDepth").value);
+    if(isFinite(v)){
+      addReading(parseInt($("bpr").value,10) || 1, v);
+      $("mDepth").value = "";
+    }
+    $("mDepth").focus();
+  });
+  $("mDepth").addEventListener("keydown", function(e){
+    if(e.key === "Enter") $("btnAdd").click();
+  });
+  $("cbr").addEventListener("change", render);
+  window.addEventListener("resize", render);
+  document.addEventListener("visibilitychange", function(){
+    if(document.visibilityState === "visible" && state.listening) requestWakeLock();
+  });
+
+  if(!SR){
+    warn("This browser has no speech recognition. Chrome, Edge or Safari will listen; here you can still log readings by hand.");
+  }
+
+  renderClock();
+  render();
+})();
+</script>
+</body>
+</html>
