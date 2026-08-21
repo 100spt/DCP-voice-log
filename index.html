@@ -244,7 +244,9 @@
     the last reading &middot; <code>stop</code> ends listening. A reading that goes backwards, jumps
     more than 25 cm at once, or passes 100 cm buzzes and turns red for you to check. Listening stops
     automatically once 100 cm is reached.<br>
-    <b>Next test</b> saves the CSV, then keeps the plot and section, adds 1 to the test number and 25
+    <b>Next test</b> saves the CSV &mdash; plot, section, test number and chainage sit in a short
+    header block at the top, followed by one row per reading holding just the reading number and the
+    total depth. It then keeps the plot and section, adds 1 to the test number and 25
     to the chainage &mdash; all four stay editable. <b>Wipe test</b> clears the readings without
     saving. Next test, Wipe test and Undo all ask before they act.
   </p>
@@ -664,11 +666,18 @@
     var test    = $("fTest").value.trim();
     var chain   = $("fChain").value.trim();
 
-    var lines = ["reading,depth_cm,test_number,plot_number,section,chainage"];
+    // header block keeps plot / section / test / chainage with the file,
+    // then the readings themselves are just reading number + total depth
+    var lines = [
+      ["plot_number", csvCell(plot)].join(","),
+      ["section",     csvCell(section)].join(","),
+      ["test_number", csvCell(test)].join(","),
+      ["chainage",    csvCell(chain)].join(","),
+      "",
+      "reading,total_depth_cm"
+    ];
     state.readings.forEach(function(r,i){
-      lines.push(i === 0
-        ? [1, fmt(r.depth), csvCell(test), csvCell(plot), csvCell(section), csvCell(chain)].join(",")
-        : [i+1, fmt(r.depth), "", "", "", ""].join(","));
+      lines.push([i+1, fmt(r.depth)].join(","));
     });
 
     var blob = new Blob([lines.join("\n")], {type:"text/csv"});
